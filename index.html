@@ -6,7 +6,15 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
-
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "4332ae03e0684018802802e4fb3e5ed4"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+    TrackJS.track('Testing TrackJS!');
+  </script>
+                          
   <style>
     button {
       margin: 3px;
@@ -64,7 +72,7 @@
         <input name="second-num" id="second-num" />
         <button id="calculate">Calculate</button>
         <br />
-        <output></output>
+        <!--<output></output>--> <!-- Commented out for the error to show up -->
       </fieldset>
     </form>
 
@@ -88,21 +96,117 @@
   </main>
 
   <script>
+    class CustomError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'Just another random error';
+      }
+    }
+
     let form = document.querySelector('form');
-    form.addEventListener('submit', e => {
+    
+      form.addEventListener('submit', e => {
       e.preventDefault();
       let output = document.querySelector('output');
       let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-    });
+      if(firstNum == ''){
+        throw new CustomError('First number is empty');
+      }
 
+      let secondNum = document.querySelector('#second-num').value;
+      if (secondNum == '') {
+        throw new CustomError('Second number is empty');
+      }
+      try{
+        let operator = document.querySelector('#operator').value;
+      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      }
+      catch(e){
+      console.log('Error has occured');
+      //console.log(e);
+    }
+    finally{
+      console.log('This is the finally block');
+    }
+      
+    });
+    
+   
+    
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    errorBtns.forEach(btn => {
+      btn.addEventListener('click', e => {
+        let btnText = e.target.textContent;
+        switch (btnText) {
+          case 'Console Log':
+            console.log('This is a log message');
+            break;
+          case 'Console Error':
+            console.error('This is an error message');
+            break;
+          case 'Console Count':
+            console.count('This is a count message');
+            break;
+          case 'Console Warn':
+            console.warn('This is a warning message');
+            break;
+          case 'Console Assert':
+            console.assert(false, 'This is an assert message');
+            break;
+          case 'Console Clear':
+            console.clear();
+            break;
+          case 'Console Dir':
+            console.dir(document.querySelector('form'));
+            break;
+          case 'Console dirxml':
+            console.dirxml(document.querySelector('form'));
+            break;
+          case 'Console Group Start':
+            console.group('This is a group');
+            break;
+          case 'Console Group End':
+            console.groupEnd();
+            break;
+          case 'Console Table':
+            console.table([{
+              name: 'John',
+              age: 20
+            }, {
+              name: 'Mary',
+              age: 25
+            }]);
+            break;
+          case 'Start Timer':
+            console.time('timer');
+            break;
+          case 'End Timer':
+            console.timeEnd('timer');
+            break;
+          case 'Console Trace':
+            console.trace();
+            break;
+          case 'Trigger a Global Error':
+            throw new Error('This is a global error');
+            break;
+        }
+
+        window.onerror = (a, b, c, d, e) => {
+            console.log(`message: ${a}`);
+            console.log(`source: ${b}`);
+            console.log(`lineno: ${c}`);
+            console.log(`colno: ${d}`);
+            console.log(`error: ${e}`);
+
+            return true;
+          };
+      });
+    });
   </script>
+
 </body>
 
 </html>
